@@ -32,7 +32,7 @@ CREATE TABLE glassware (
 -- Preparation
 CREATE TABLE preparation (
     step_id INT PRIMARY KEY AUTO_INCREMENT,
-    step_description VARCHAR(256) NOT NULL
+    step VARCHAR(256) NOT NULL
 );
 
 -- Bar
