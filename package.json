@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/apiekarski98/cocktails-3200/issues"
   },
-  "homepage": "https://github.com/apiekarski98/cocktails-3200#readme"
+  "homepage": "https://github.com/apiekarski98/cocktails-3200#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
