@@ -11,31 +11,31 @@ CREATE TABLE location (
     city VARCHAR(20) NOT NULL
 );
 
--- Ingredient 
+-- Each tuple represents a single ingredient that may be used in a cocktail
 CREATE TABLE ingredient (
     ingredient_id INT PRIMARY KEY AUTO_INCREMENT,
     ingredient_name VARCHAR(30) NOT NULL
 );
 
--- Garnish
+-- Each tuple represents a single garnish that may be used in a cocktail
 CREATE TABLE garnish (
     garnish_id INT PRIMARY KEY AUTO_INCREMENT,
     garnish_name VARCHAR(30) NOT NULL
 );
 
--- Glassware
+-- Each tuple represents glassware that a cocktail may be served in
 CREATE TABLE glassware (
     glassware_id INT PRIMARY KEY AUTO_INCREMENT,
     glassware_name VARCHAR(15) NOT NULL
 );
 
--- Preparation
+-- Each tuple is a step in the cocktail preparation process
 CREATE TABLE preparation (
     step_id INT PRIMARY KEY AUTO_INCREMENT,
     step VARCHAR(256) NOT NULL
 );
 
--- Bar
+-- Bar the cocktail was invented at
 CREATE TABLE bar (
     bar_id INT PRIMARY KEY AUTO_INCREMENT,
     bar_name VARCHAR(30) NOT NULL,
@@ -45,7 +45,7 @@ CREATE TABLE bar (
         ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
--- Bartender
+-- Bartender who invented the cocktail
 CREATE TABLE bartender (
     bartender_id INT PRIMARY KEY AUTO_INCREMENT,
     first_name VARCHAR(10) NOT NULL,
@@ -56,7 +56,9 @@ CREATE TABLE bartender (
         ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
--- Cocktails
+-- Each tuple represents a cocktail. Joins across multiple tables
+-- in the DB will produce a cocktail recipe. Each cocktail is created
+-- by only one bartender and served in only one type of glass
 CREATE TABLE cocktail (
     cocktail_id INT PRIMARY KEY AUTO_INCREMENT,
     cocktail_name VARCHAR(30) NOT NULL,
@@ -70,7 +72,9 @@ CREATE TABLE cocktail (
         ON UPDATE CASCADE ON DELETE SET NULL
 );
 
--- Cocktails and ingredients
+-- Ingredients that make up a cocktail
+-- If a cocktail is updated/deleted, the tuples here should cascade
+-- A parent ingredient cannot be deleted if it is used in a cocktail
 CREATE TABLE cocktail_ingredients (
     cocktail INT NOT NULL,
     ingredient INT NOT NULL,
@@ -84,7 +88,9 @@ CREATE TABLE cocktail_ingredients (
         ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
--- Cocktails and garnishes
+-- Garnishes used in a cocktail
+-- If a cocktail is updated/deleted, the tuples here should cascade
+-- A parent garnish cannot be deleted if it is used in a cocktail
 CREATE TABLE cocktail_garnishes (
     cocktail INT NOT NULL,
     garnish INT NOT NULL,
@@ -98,7 +104,9 @@ CREATE TABLE cocktail_garnishes (
         ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
--- Cocktails and preparations
+-- Preparation required to make a cocktail
+-- If a cocktail is updated/deleted, the tuples here should cascade
+-- A parent step cannot be deleted if it is used in a cocktail
 CREATE TABLE cocktail_steps (
     cocktail INT NOT NULL,
     step INT NOT NULL,
