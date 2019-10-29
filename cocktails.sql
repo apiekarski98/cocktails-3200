@@ -1,6 +1,6 @@
 -- Set up cocktails DB
---DROP DATABASE IF EXISTS cocktails;
---CREATE DATABASE cocktails;
+-- DROP DATABASE IF EXISTS cocktails;
+-- CREATE DATABASE cocktails;
 
 -- Use cocktails DB
 USE heroku_1549d99746341be;
@@ -119,4 +119,4 @@ CREATE TABLE cocktail_steps (
         ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
-
+INSERT INTO ingredient (ingredient_name) VALUES ('rum' , 'tequila', 'vodka', 'gin', 'whiskey');
