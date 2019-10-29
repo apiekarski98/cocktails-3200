@@ -1,6 +1,8 @@
 -- Set up cocktails DB
 -- DROP DATABASE IF EXISTS cocktails;
 -- CREATE DATABASE cocktails;
+DROP DATABASE IF EXISTS heroku_1549d99746341be;
+CREATE DATABASE heroku_1549d99746341be;
 
 -- Use cocktails DB
 USE heroku_1549d99746341be;
@@ -95,7 +97,7 @@ CREATE TABLE cocktail_garnishes (
     cocktail INT NOT NULL,
     garnish INT NOT NULL,
     amount VARCHAR(30) NOT NULL,
-    CONSTRAINT cocktail_garnishes_pk PRIMARY KEY (cocktail, garnish),
+    CONSTRAINT cocktail_garnishes_pk PRIMARY KEY (cocktail , garnish),
     CONSTRAINT cg_cocktail_fk FOREIGN KEY (cocktail)
         REFERENCES cocktail (cocktail_id)
         ON UPDATE CASCADE ON DELETE CASCADE,
@@ -119,4 +121,8 @@ CREATE TABLE cocktail_steps (
         ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
-INSERT INTO ingredient (ingredient_name) VALUES ('rum' , 'tequila', 'vodka', 'gin', 'whiskey');
+INSERT INTO ingredient (ingredient_id, ingredient_name) VALUES (1, 'rum');
+INSERT INTO ingredient (ingredient_id, ingredient_name) VALUES (2, 'gin');
+INSERT INTO ingredient (ingredient_id, ingredient_name) VALUES (3, 'whiskey');
+INSERT INTO ingredient (ingredient_id, ingredient_name) VALUES (4, 'vodka');
+INSERT INTO ingredient (ingredient_id, ingredient_name) VALUES (5, 'tequila');
