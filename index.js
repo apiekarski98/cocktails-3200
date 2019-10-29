@@ -23,8 +23,10 @@ app.get('/', (req, res) => {
         '    ingredient_name VARCHAR(30) NOT NULL\n' +
         ')');
     con.query('INSERT INTO ingredient (ingredient_id, ingredient_name) VALUES (1, \'rum\'), (2, \'gin\'), (3, \'tequila\'), (4, \'whiskey\'), (5, \'vodka\')');
-    var query = con.query('SELECT ingredient_name FROM ingredient');
-    res.send(query);
+    con.query('SELECT * FROM ingredient', function (error, results, fields) {
+        if (error) throw error;
+        res.send(results);
+    });
 });
 
 app.listen(process.env.PORT || 8000, () => {
