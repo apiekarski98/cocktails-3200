@@ -144,7 +144,7 @@ function insertMockData() {
 // setUpTables();
 // insertMockData();
 
-app.get('/', (req, res) => {
+app.get('/api/ingredient', (req, res) => {
     const id = req.params.id;
     con.query('SELECT * FROM ingredient', function (error, results) {
         if (error) throw error;
