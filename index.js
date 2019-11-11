@@ -1,4 +1,9 @@
 var mysql = require('mysql');
+var cors = require('cors');
+const express = require('express');
+const app = express();
+
+app.use(cors());
 
 var con = mysql.createConnection({
     host: 'us-cdbr-iron-east-05.cleardb.net',
@@ -138,9 +143,6 @@ function insertMockData() {
 // Set up DB for app
 // setUpTables();
 // insertMockData();
-
-const express = require('express');
-const app = express();
 
 app.get('/', (req, res) => {
     const id = req.params.id;
