@@ -136,8 +136,8 @@ function insertMockData() {
 }
 
 // Set up DB for app
-setUpTables();
-insertMockData();
+// setUpTables();
+// insertMockData();
 
 const express = require('express');
 const app = express();
