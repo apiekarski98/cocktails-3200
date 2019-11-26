@@ -140,13 +140,18 @@ function insertMockData() {
     con.query('INSERT INTO ingredient (ingredient_id, ingredient_name) VALUES (1, \'rum\'), (2, \'gin\'), (3, \'tequila\'), (4, \'whiskey\'), (5, \'vodka\')');
 }
 
-// Set up DB for app
-// setUpTables();
-// insertMockData();
 
 app.get('/api/ingredient', (req, res) => {
     const id = req.params.id;
     con.query('SELECT * FROM ingredient', function (error, results) {
+        if (error) throw error;
+        res.send(results);
+    });
+});
+
+app.delete('/api/ingredient/:ingredient_id', (req, res) => {
+    const id = req.params.ingredient_id;
+    con.query('DELETE FROM ingredient WHERE ingredient_id = ?', id, function (error, results) {
         if (error) throw error;
         res.send(results);
     });
