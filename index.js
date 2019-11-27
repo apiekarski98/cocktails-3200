@@ -197,6 +197,18 @@ app.put('/api/ingredient',
             });
     });
 
+app.post('/api/ingredient/:ingredient_id',
+    (req, res) => {
+        const id = req.params.ingredient_id;
+        const ingredient = req.body.ingredient_name;
+        con.query('UPDATE ingredient SET ingredient_name = ? WHERE ingredient_id = ?',
+            [ingredient, id],
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
 app.delete('/api/ingredient/:ingredient_id',
     (req, res) => {
         const id = req.params.ingredient_id;
