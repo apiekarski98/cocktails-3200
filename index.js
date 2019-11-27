@@ -1,22 +1,40 @@
-var mysql = require('mysql');
-var cors = require('cors');
+const mysql = require('mysql');
+const cors = require('cors');
 const express = require('express');
 const app = express();
+const bodyParser = require('body-parser')
 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 app.use(cors());
 
-var con = mysql.createConnection({
-    host: 'us-cdbr-iron-east-05.cleardb.net',
-    user: 'b912905bc8ad2c',
-    password: '1a5c658a',
-    database: 'heroku_1549d99746341be',
-    port: 3306
-});
+var con;
 
-con.connect(function (err) {
-    if (err) throw err;
-    console.log("Connected!");
-});
+function handleDisconnect() {
+    con = mysql.createConnection({
+        host: 'us-cdbr-iron-east-05.cleardb.net',
+        user: 'b912905bc8ad2c',
+        password: '1a5c658a',
+        database: 'heroku_1549d99746341be',
+        port: 3306
+    });
+
+    con.connect(function(err) {              // The server is either down
+        if(err) {                                     // or restarting (takes a while sometimes).
+            setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
+        }                                     // to avoid a hot loop, and to allow our node script to
+    });                                     // process asynchronous requests in the meantime.
+                                            // If you're also serving http, display a 503 error.
+    con.on('error', function(err) {
+        if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+            handleDisconnect();                         // lost due to either server restart, or a
+        } else {                                      // connnection idle timeout (the wait_timeout
+            throw err;                                  // server variable configures this)
+        }
+    });
+}
+
+handleDisconnect();
 
 // Function to be run right away to set up all
 // the tables needed for the cocktails web app
@@ -142,10 +160,23 @@ function insertMockData() {
 
 
 app.get('/api/ingredient', (req, res) => {
-    const id = req.params.id;
     con.query('SELECT * FROM ingredient', function (error, results) {
         if (error) throw error;
         res.send(results);
+    });
+});
+
+app.put('/api/ingredient', (req, res) => {
+    con.query('SELECT MAX(ingredient_id) AS last_id FROM ingredient', function (error, results) {
+        if (error) throw error;
+
+        const new_id = results[0].last_id + 1;
+        const ingredient = req.body.ingredient_name;
+
+        con.query('INSERT INTO ingredient (ingredient_id, ingredient_name) VALUES (?, ?)', [new_id, ingredient], function (error, results) {
+            if (error) throw error;
+            res.send(results);
+        });
     });
 });
 
