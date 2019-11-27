@@ -2,9 +2,9 @@ const mysql = require('mysql');
 const cors = require('cors');
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -19,14 +19,14 @@ function handleDisconnect() {
         port: 3306
     });
 
-    con.connect(function(err) {              // The server is either down
-        if(err) {                                     // or restarting (takes a while sometimes).
+    con.connect(function (err) {              // The server is either down
+        if (err) {                                     // or restarting (takes a while sometimes).
             setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
         }                                     // to avoid a hot loop, and to allow our node script to
     });                                     // process asynchronous requests in the meantime.
                                             // If you're also serving http, display a 503 error.
-    con.on('error', function(err) {
-        if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+    con.on('error', function (err) {
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
             handleDisconnect();                         // lost due to either server restart, or a
         } else {                                      // connnection idle timeout (the wait_timeout
             throw err;                                  // server variable configures this)
@@ -159,34 +159,54 @@ function insertMockData() {
 }
 
 
-app.get('/api/ingredient', (req, res) => {
-    con.query('SELECT * FROM ingredient', function (error, results) {
-        if (error) throw error;
-        res.send(results);
+app.get('/api/ingredient',
+    (req, res) => {
+        con.query('SELECT * FROM ingredient',
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
     });
-});
 
-app.put('/api/ingredient', (req, res) => {
-    con.query('SELECT MAX(ingredient_id) AS last_id FROM ingredient', function (error, results) {
-        if (error) throw error;
-
-        const new_id = results[0].last_id + 1;
-        const ingredient = req.body.ingredient_name;
-
-        con.query('INSERT INTO ingredient (ingredient_id, ingredient_name) VALUES (?, ?)', [new_id, ingredient], function (error, results) {
-            if (error) throw error;
-            res.send(results);
-        });
+app.get('/api/ingredient/:ingredient_id',
+    (req, res) => {
+        const id = req.params.ingredient_id;
+        con.query('SELECT * FROM ingredient WHERE ingredient_id = ?',
+            id,
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
     });
-});
 
-app.delete('/api/ingredient/:ingredient_id', (req, res) => {
-    const id = req.params.ingredient_id;
-    con.query('DELETE FROM ingredient WHERE ingredient_id = ?', id, function (error, results) {
-        if (error) throw error;
-        res.send(results);
+app.put('/api/ingredient',
+    (req, res) => {
+        con.query('SELECT MAX(ingredient_id) AS last_id FROM ingredient',
+            function (error, results) {
+                if (error) throw error;
+
+                const new_id = results[0].last_id + 1;
+                const ingredient = req.body.ingredient_name;
+
+                con.query('INSERT INTO ingredient (ingredient_id, ingredient_name) VALUES (?, ?)',
+                    [new_id, ingredient],
+                    function (error, results) {
+                        if (error) throw error;
+                        res.send(results);
+                    });
+            });
     });
-});
+
+app.delete('/api/ingredient/:ingredient_id',
+    (req, res) => {
+        const id = req.params.ingredient_id;
+        con.query('DELETE FROM ingredient WHERE ingredient_id = ?',
+            id,
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
 
 app.listen(process.env.PORT || 8000, () => {
     console.log('Example app listening on port 8000!')
