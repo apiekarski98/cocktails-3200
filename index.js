@@ -185,7 +185,12 @@ app.put('/api/ingredient',
             function (error, results) {
                 if (error) throw error;
 
-                const new_id = results[0].last_id + 1;
+                let new_id = results[0].last_id;
+                if (new_id === null) {
+                    new_id = 0;
+                } else {
+                    new_id = new_id + 1;
+                }
                 const ingredient = req.body.ingredient_name;
 
                 con.query('INSERT INTO ingredient (ingredient_id, ingredient_name) VALUES (?, ?)',
