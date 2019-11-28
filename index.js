@@ -199,6 +199,45 @@ app.get('/api/garnish/:garnish_id',
             });
     });
 
+app.get('/api/location',
+    (req, res) => {
+        con.query('SELECT * FROM location',
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+app.get('/api/location/:location_id',
+    (req, res) => {
+        const id = req.params.location_id;
+        con.query('SELECT * FROM location WHERE location_id = ?',
+            id,
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+app.get('/api/glassware',
+    (req, res) => {
+        con.query('SELECT * FROM glassware',
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+app.get('/api/glassware/:glassware_id',
+    (req, res) => {
+        const id = req.params.glassware_id;
+        con.query('SELECT * FROM glassware WHERE glassware_id = ?',
+            id,
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
 // PUT APIs
 app.put('/api/ingredient',
     (req, res) => {
@@ -246,6 +285,52 @@ app.put('/api/garnish',
             });
     });
 
+app.put('/api/location',
+    (req, res) => {
+        con.query('SELECT MAX(location_id) AS last_id FROM location',
+            function (error, results) {
+                if (error) throw error;
+
+                let new_id = results[0].last_id;
+                if (new_id === null) {
+                    new_id = 0;
+                } else {
+                    new_id = new_id + 1;
+                }
+                const { city } = req.body;
+
+                con.query('INSERT INTO location (location_id, city) VALUES (?, ?)',
+                    [new_id, city],
+                    function (error, results) {
+                        if (error) throw error;
+                        res.send(results);
+                    });
+            });
+    });
+
+app.put('/api/glassware',
+    (req, res) => {
+        con.query('SELECT MAX(glassware_id) AS last_id FROM glassware',
+            function (error, results) {
+                if (error) throw error;
+
+                let new_id = results[0].last_id;
+                if (new_id === null) {
+                    new_id = 0;
+                } else {
+                    new_id = new_id + 1;
+                }
+                const { glassware_name } = req.body;
+
+                con.query('INSERT INTO glassware (glassware_id, glassware_name) VALUES (?, ?)',
+                    [new_id, glassware_name],
+                    function (error, results) {
+                        if (error) throw error;
+                        res.send(results);
+                    });
+            });
+    });
+
 // POST APIs
 app.post('/api/ingredient/:ingredient_id',
     (req, res) => {
@@ -271,6 +356,30 @@ app.post('/api/garnish/:garnish_id',
             });
     });
 
+app.post('/api/location/:location_id',
+    (req, res) => {
+        const id = req.params.location_id;
+        const { city } = req.body;
+        con.query('UPDATE location SET city = ? WHERE location_id = ?',
+            [city, id],
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+app.post('/api/glassware/:glassware_id',
+    (req, res) => {
+        const id = req.params.glassware_id;
+        const { glassware_name } = req.body;
+        con.query('UPDATE glassware SET glassware_name = ? WHERE glassware_id = ?',
+            [glassware_name, id],
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
 // DELETE APIs
 app.delete('/api/ingredient/:ingredient_id',
     (req, res) => {
@@ -287,6 +396,28 @@ app.delete('/api/garnish/:garnish_id',
     (req, res) => {
         const id = req.params.garnish_id;
         con.query('DELETE FROM garnish WHERE garnish_id = ?',
+            id,
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+app.delete('/api/location/:location_id',
+    (req, res) => {
+        const id = req.params.location_id;
+        con.query('DELETE FROM location WHERE location_id = ?',
+            id,
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+app.delete('/api/glassware/:glassware_id',
+    (req, res) => {
+        const id = req.params.glassware_id;
+        con.query('DELETE FROM glassware WHERE glassware_id = ?',
             id,
             function (error, results) {
                 if (error) throw error;
