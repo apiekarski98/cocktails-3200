@@ -158,7 +158,7 @@ function insertMockData() {
     con.query('INSERT INTO ingredient (ingredient_id, ingredient_name) VALUES (1, \'rum\'), (2, \'gin\'), (3, \'tequila\'), (4, \'whiskey\'), (5, \'vodka\')');
 }
 
-
+// GET APIs
 app.get('/api/ingredient',
     (req, res) => {
         con.query('SELECT * FROM ingredient',
@@ -179,6 +179,27 @@ app.get('/api/ingredient/:ingredient_id',
             });
     });
 
+app.get('/api/garnish',
+    (req, res) => {
+        con.query('SELECT * FROM garnish',
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+app.get('/api/garnish/:garnish_id',
+    (req, res) => {
+        const id = req.params.garnish_id;
+        con.query('SELECT * FROM garnish WHERE garnish_id = ?',
+            id,
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+// PUT APIs
 app.put('/api/ingredient',
     (req, res) => {
         con.query('SELECT MAX(ingredient_id) AS last_id FROM ingredient',
@@ -202,6 +223,30 @@ app.put('/api/ingredient',
             });
     });
 
+app.put('/api/garnish',
+    (req, res) => {
+        con.query('SELECT MAX(garnish_id) AS last_id FROM garnish',
+            function (error, results) {
+                if (error) throw error;
+
+                let new_id = results[0].last_id;
+                if (new_id === null) {
+                    new_id = 0;
+                } else {
+                    new_id = new_id + 1;
+                }
+                const garnish = req.body.garnish_name;
+
+                con.query('INSERT INTO garnish (garnish_id, garnish_name) VALUES (?, ?)',
+                    [new_id, garnish],
+                    function (error, results) {
+                        if (error) throw error;
+                        res.send(results);
+                    });
+            });
+    });
+
+// POST APIs
 app.post('/api/ingredient/:ingredient_id',
     (req, res) => {
         const id = req.params.ingredient_id;
@@ -214,10 +259,34 @@ app.post('/api/ingredient/:ingredient_id',
             });
     });
 
+app.post('/api/garnish/:garnish_id',
+    (req, res) => {
+        const id = req.params.garnish_id;
+        const garnish = req.body.garnish_name;
+        con.query('UPDATE garnish SET garnish_name = ? WHERE garnish_id = ?',
+            [garnish, id],
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+// DELETE APIs
 app.delete('/api/ingredient/:ingredient_id',
     (req, res) => {
         const id = req.params.ingredient_id;
         con.query('DELETE FROM ingredient WHERE ingredient_id = ?',
+            id,
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+app.delete('/api/garnish/:garnish_id',
+    (req, res) => {
+        const id = req.params.garnish_id;
+        con.query('DELETE FROM garnish WHERE garnish_id = ?',
             id,
             function (error, results) {
                 if (error) throw error;
