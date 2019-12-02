@@ -238,6 +238,27 @@ app.get('/api/glassware/:glassware_id',
                 res.send(results);
             });
     });
+
+app.get('/api/preparation',
+    (req, res) => {
+        con.query('SELECT * FROM preparation',
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+app.get('/api/preparation/:step_id',
+    (req, res) => {
+        const id = req.params.step_id;
+        con.query('SELECT * FROM preparation WHERE step_id = ?',
+            id,
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
 // PUT APIs
 app.put('/api/ingredient',
     (req, res) => {
@@ -331,6 +352,29 @@ app.put('/api/glassware',
             });
     });
 
+app.put('/api/preparation',
+    (req, res) => {
+        con.query('SELECT MAX(step_id) AS last_id FROM preparation',
+            function (error, results) {
+                if (error) throw error;
+
+                let new_id = results[0].last_id;
+                if (new_id === null) {
+                    new_id = 0;
+                } else {
+                    new_id = new_id + 1;
+                }
+                const { step } = req.body;
+
+                con.query('INSERT INTO preparation (step_id, step) VALUES (?, ?)',
+                    [new_id, step],
+                    function (error, results) {
+                        if (error) throw error;
+                        res.send(results);
+                    });
+            });
+    });
+
 // POST APIs
 app.post('/api/ingredient/:ingredient_id',
     (req, res) => {
@@ -380,6 +424,18 @@ app.post('/api/glassware/:glassware_id',
             });
     });
 
+app.post('/api/preparation/:step_id',
+    (req, res) => {
+        const id = req.params.step_id;
+        const { step } = req.body;
+        con.query('UPDATE preparation SET step = ? WHERE step_id = ?',
+            [step, id],
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
 // DELETE APIs
 app.delete('/api/ingredient/:ingredient_id',
     (req, res) => {
@@ -418,6 +474,17 @@ app.delete('/api/glassware/:glassware_id',
     (req, res) => {
         const id = req.params.glassware_id;
         con.query('DELETE FROM glassware WHERE glassware_id = ?',
+            id,
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+app.delete('/api/preparation/:step_id',
+    (req, res) => {
+        const id = req.params.step_id;
+        con.query('DELETE FROM preparation WHERE step_id = ?',
             id,
             function (error, results) {
                 if (error) throw error;
