@@ -279,6 +279,24 @@ app.get('/api/bar/:bar_id',
             });
     });
 
+app.get('/api/bartender',
+    (req, res) => {
+        con.query('SELECT * FROM bartender',
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+app.get('/api/bartender/:bartender_id',
+    (req, res) => {
+        con.query('SELECT bartender_id, first_name, last_name, bar, bar_name FROM bartender JOIN bar ON bar.bar_id = bartender.bar',
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
 // PUT APIs
 app.put('/api/ingredient',
     (req, res) => {
@@ -516,6 +534,17 @@ app.delete('/api/bar/:bar_id',
     (req, res) => {
         const id = req.params.bar_id;
         con.query('DELETE FROM bar WHERE bar_id = ?',
+            id,
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+app.delete('/api/bartender/:bartender_id',
+    (req, res) => {
+        const id = req.params.bartender_id;
+        con.query('DELETE FROM bartender WHERE bartender_id = ?',
             id,
             function (error, results) {
                 if (error) throw error;
