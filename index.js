@@ -259,6 +259,26 @@ app.get('/api/preparation/:step_id',
             });
     });
 
+app.get('/api/bar',
+    (req, res) => {
+        con.query('SELECT * FROM bar',
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+app.get('/api/bar/:bar_id',
+    (req, res) => {
+        const id = req.params.bar_id;
+        con.query('SELECT bar_id, bar_name, location, city FROM bar JOIN location ON bar.location = location.location_id WHERE bar_id = ?',
+            id,
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
 // PUT APIs
 app.put('/api/ingredient',
     (req, res) => {
@@ -485,6 +505,17 @@ app.delete('/api/preparation/:step_id',
     (req, res) => {
         const id = req.params.step_id;
         con.query('DELETE FROM preparation WHERE step_id = ?',
+            id,
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+app.delete('/api/bar/:bar_id',
+    (req, res) => {
+        const id = req.params.bar_id;
+        con.query('DELETE FROM bar WHERE bar_id = ?',
             id,
             function (error, results) {
                 if (error) throw error;
