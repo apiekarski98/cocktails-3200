@@ -298,116 +298,56 @@ app.get('/api/bartender/:bartender_id',
 // PUT APIs
 app.put('/api/ingredient',
     (req, res) => {
-        con.query('SELECT MAX(ingredient_id) AS last_id FROM ingredient',
+        const {ingredient_name} = req.body;
+        con.query('CALL add_ingredient(?)',
+            ingredient_name,
             function (error, results) {
                 if (error) throw error;
-
-                let new_id = results[0].last_id;
-                if (new_id === null) {
-                    new_id = 0;
-                } else {
-                    new_id = new_id + 1;
-                }
-                const ingredient = req.body.ingredient_name;
-
-                con.query('INSERT INTO ingredient (ingredient_id, ingredient_name) VALUES (?, ?)',
-                    [new_id, ingredient],
-                    function (error, results) {
-                        if (error) throw error;
-                        res.send(results);
-                    });
+                res.send(results);
             });
     });
 
 app.put('/api/garnish',
     (req, res) => {
-        con.query('SELECT MAX(garnish_id) AS last_id FROM garnish',
+        const {garnish_name} = req.body;
+        con.query('CALL add_garnish(?)',
+            garnish_name,
             function (error, results) {
                 if (error) throw error;
-
-                let new_id = results[0].last_id;
-                if (new_id === null) {
-                    new_id = 0;
-                } else {
-                    new_id = new_id + 1;
-                }
-                const garnish = req.body.garnish_name;
-
-                con.query('INSERT INTO garnish (garnish_id, garnish_name) VALUES (?, ?)',
-                    [new_id, garnish],
-                    function (error, results) {
-                        if (error) throw error;
-                        res.send(results);
-                    });
+                res.send(results);
             });
     });
 
 app.put('/api/location',
     (req, res) => {
-        con.query('SELECT MAX(location_id) AS last_id FROM location',
+        const {city} = req.body;
+        con.query('CALL add_location(?)',
+            city,
             function (error, results) {
                 if (error) throw error;
-
-                let new_id = results[0].last_id;
-                if (new_id === null) {
-                    new_id = 0;
-                } else {
-                    new_id = new_id + 1;
-                }
-                const {city} = req.body;
-
-                con.query('INSERT INTO location (location_id, city) VALUES (?, ?)',
-                    [new_id, city],
-                    function (error, results) {
-                        if (error) throw error;
-                        res.send(results);
-                    });
+                res.send(results);
             });
     });
 
 app.put('/api/glassware',
     (req, res) => {
-        con.query('SELECT MAX(glassware_id) AS last_id FROM glassware',
+        const {glassware_name} = req.body;
+        con.query('CALL add_glassware(?)',
+            glassware_name,
             function (error, results) {
                 if (error) throw error;
-
-                let new_id = results[0].last_id;
-                if (new_id === null) {
-                    new_id = 0;
-                } else {
-                    new_id = new_id + 1;
-                }
-                const {glassware_name} = req.body;
-
-                con.query('INSERT INTO glassware (glassware_id, glassware_name) VALUES (?, ?)',
-                    [new_id, glassware_name],
-                    function (error, results) {
-                        if (error) throw error;
-                        res.send(results);
-                    });
+                res.send(results);
             });
     });
 
 app.put('/api/preparation',
     (req, res) => {
-        con.query('SELECT MAX(step_id) AS last_id FROM preparation',
+        const {step} = req.body;
+        con.query('CALL add_step(?)',
+            step,
             function (error, results) {
                 if (error) throw error;
-
-                let new_id = results[0].last_id;
-                if (new_id === null) {
-                    new_id = 0;
-                } else {
-                    new_id = new_id + 1;
-                }
-                const {step} = req.body;
-
-                con.query('INSERT INTO preparation (step_id, step) VALUES (?, ?)',
-                    [new_id, step],
-                    function (error, results) {
-                        if (error) throw error;
-                        res.send(results);
-                    });
+                res.send(results);
             });
     });
 
