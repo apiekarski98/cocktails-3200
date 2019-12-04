@@ -356,7 +356,7 @@ app.put('/api/location',
                 } else {
                     new_id = new_id + 1;
                 }
-                const { city } = req.body;
+                const {city} = req.body;
 
                 con.query('INSERT INTO location (location_id, city) VALUES (?, ?)',
                     [new_id, city],
@@ -379,7 +379,7 @@ app.put('/api/glassware',
                 } else {
                     new_id = new_id + 1;
                 }
-                const { glassware_name } = req.body;
+                const {glassware_name} = req.body;
 
                 con.query('INSERT INTO glassware (glassware_id, glassware_name) VALUES (?, ?)',
                     [new_id, glassware_name],
@@ -402,7 +402,7 @@ app.put('/api/preparation',
                 } else {
                     new_id = new_id + 1;
                 }
-                const { step } = req.body;
+                const {step} = req.body;
 
                 con.query('INSERT INTO preparation (step_id, step) VALUES (?, ?)',
                     [new_id, step],
@@ -412,6 +412,16 @@ app.put('/api/preparation',
                     });
             });
     });
+
+app.put('/api/bar', (req, res) => {
+    const {bar_name, location} = req.body;
+    con.query('CALL add_new_bar(?,?)',
+        [bar_name, location],
+        function (error, results) {
+            if (error) throw error;
+            res.send(results);
+        });
+});
 
 // POST APIs
 app.post('/api/ingredient/:ingredient_id',
@@ -441,7 +451,7 @@ app.post('/api/garnish/:garnish_id',
 app.post('/api/location/:location_id',
     (req, res) => {
         const id = req.params.location_id;
-        const { city } = req.body;
+        const {city} = req.body;
         con.query('UPDATE location SET city = ? WHERE location_id = ?',
             [city, id],
             function (error, results) {
@@ -453,7 +463,7 @@ app.post('/api/location/:location_id',
 app.post('/api/glassware/:glassware_id',
     (req, res) => {
         const id = req.params.glassware_id;
-        const { glassware_name } = req.body;
+        const {glassware_name} = req.body;
         con.query('UPDATE glassware SET glassware_name = ? WHERE glassware_id = ?',
             [glassware_name, id],
             function (error, results) {
@@ -465,9 +475,21 @@ app.post('/api/glassware/:glassware_id',
 app.post('/api/preparation/:step_id',
     (req, res) => {
         const id = req.params.step_id;
-        const { step } = req.body;
+        const {step} = req.body;
         con.query('UPDATE preparation SET step = ? WHERE step_id = ?',
             [step, id],
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+app.post('/api/bar/:bar_id',
+    (req, res) => {
+        const id = req.params.bar_id;
+        const {bar_name, location} = req.body;
+        con.query('CALL update_bar(?,?,?)',
+            [id, bar_name, location],
             function (error, results) {
                 if (error) throw error;
                 res.send(results);
