@@ -154,10 +154,6 @@ function setUpTables() {
         ')');
 }
 
-function insertMockData() {
-    con.query('INSERT INTO ingredient (ingredient_id, ingredient_name) VALUES (1, \'rum\'), (2, \'gin\'), (3, \'tequila\'), (4, \'whiskey\'), (5, \'vodka\')');
-}
-
 // GET APIs
 app.get('/api/ingredient',
     (req, res) => {
@@ -290,7 +286,9 @@ app.get('/api/bartender',
 
 app.get('/api/bartender/:bartender_id',
     (req, res) => {
-        con.query('SELECT bartender_id, first_name, last_name, bar, bar_name FROM bartender JOIN bar ON bar.bar_id = bartender.bar',
+        const id = req.params.bartender_id;
+        con.query('SELECT bartender_id, first_name, last_name, bar, bar_name FROM bartender JOIN bar ON bar.bar_id = bartender.bar WHERE bartender_id = ?',
+            id,
             function (error, results) {
                 if (error) throw error;
                 res.send(results);
@@ -423,6 +421,16 @@ app.put('/api/bar', (req, res) => {
         });
 });
 
+app.put('/api/bartender', (req, res) => {
+    const {first_name, last_name, bar} = req.body;
+    con.query('CALL add_new_bartender(?,?,?)',
+        [first_name, last_name, bar],
+        function (error, results) {
+            if (error) throw error;
+            res.send(results);
+        });
+});
+
 // POST APIs
 app.post('/api/ingredient/:ingredient_id',
     (req, res) => {
@@ -490,6 +498,18 @@ app.post('/api/bar/:bar_id',
         const {bar_name, location} = req.body;
         con.query('CALL update_bar(?,?,?)',
             [id, bar_name, location],
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+app.post('/api/bartender/:bartender_id',
+    (req, res) => {
+        const id = req.params.bartender_id;
+        const {first_name, last_name, bar} = req.body;
+        con.query('CALL update_bartender(?,?,?,?)',
+            [id, first_name, last_name, bar],
             function (error, results) {
                 if (error) throw error;
                 res.send(results);
