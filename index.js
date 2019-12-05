@@ -295,6 +295,24 @@ app.get('/api/bartender/:bartender_id',
             });
     });
 
+app.get('/api/cocktail', (req, res) => {
+    con.query('SELECT * FROM cocktail',
+        function (error, results) {
+            if (error) throw error;
+            res.send(results);
+        });
+});
+
+app.get('/api/cocktail/:cocktail_id', (req, res) => {
+    const {cocktail_id} = req.params;
+    con.query('SELECT * FROM cocktail WHERE cocktail_id = ?',
+        cocktail_id,
+        function (error, results) {
+            if (error) throw error;
+            res.send(results);
+        });
+});
+
 // PUT APIs
 app.put('/api/ingredient',
     (req, res) => {
@@ -351,7 +369,8 @@ app.put('/api/preparation',
             });
     });
 
-app.put('/api/bar', (req, res) => {
+app.put('/api/bar',
+    (req, res) => {
     const {bar_name, location} = req.body;
     con.query('CALL add_new_bar(?,?)',
         [bar_name, location],
@@ -361,7 +380,8 @@ app.put('/api/bar', (req, res) => {
         });
 });
 
-app.put('/api/bartender', (req, res) => {
+app.put('/api/bartender',
+    (req, res) => {
     const {first_name, last_name, bar} = req.body;
     con.query('CALL add_new_bartender(?,?,?)',
         [first_name, last_name, bar],
@@ -370,6 +390,53 @@ app.put('/api/bartender', (req, res) => {
             res.send(results);
         });
 });
+
+app.put('/api/cocktail',
+    (req, res) => {
+    const {cocktail_name} = req.body;
+    con.query('CALL add_cocktail(?)',
+        cocktail_name,
+        function (error, results) {
+            if (error) throw error;
+            res.send(results);
+        });
+});
+
+app.put('/api/cocktail/:cocktail_id/add-ingredient/:ingredient_id',
+    (req, res) => {
+    const {cocktail_id, ingredient_id} = req.params;
+    const {ingredient_amount} = req.body;
+    con.query('INSERT INTO cocktail_ingredients (cocktail, ingredient, amount) VALUES (?,?,?)',
+        [cocktail_id, ingredient_id, ingredient_amount],
+        function (error, results) {
+            if (error) throw error;
+            res.send(results);
+        });
+});
+
+app.put('/api/cocktail/:cocktail_id/add-garnish/:garnish_id',
+    (req, res) => {
+        const {cocktail_id, garnish_id} = req.params;
+        const {garnish_amount} = req.body;
+        con.query('INSERT INTO cocktail_garnishes (cocktail, garnish, amount) VALUES (?,?,?)',
+            [cocktail_id, garnish_id, garnish_amount],
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+app.put('/api/cocktail/:cocktail_id/add-step/:step_id',
+    (req, res) => {
+        const {cocktail_id, step_id} = req.params;
+        con.query('INSERT INTO cocktail_steps (cocktail, step) VALUES (?,?)',
+            [cocktail_id, step_id],
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
 
 // POST APIs
 app.post('/api/ingredient/:ingredient_id',
@@ -456,6 +523,66 @@ app.post('/api/bartender/:bartender_id',
             });
     });
 
+app.post('/api/cocktail/:cocktail_id',
+    (req, res) => {
+        const id = req.params.cocktail_id;
+        const {cocktail_name} = req.body;
+        con.query('UPDATE cocktail SET cocktail_name = ? WHERE cocktail_id = ?',
+            [cocktail_name, id],
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+app.post('/api/cocktail/:cocktail_id/add-bartender/:bartender_id',
+    (req, res) => {
+        const {cocktail_id, bartender_id} = req.params;
+        con.query('UPDATE cocktail SET bartender = ? WHERE cocktail_id = ?',
+            [bartender_id, cocktail_id],
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    }
+);
+
+app.post('/api/cocktail/:cocktail_id/remove-bartender',
+    (req, res) => {
+        const {cocktail_id} = req.params;
+        con.query('UPDATE cocktail SET bartender = NULL WHERE cocktail_id = ?',
+            cocktail_id,
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    }
+);
+
+app.post('/api/cocktail/:cocktail_id/add-glassware/:glassware_id',
+    (req, res) => {
+        const {cocktail_id, glassware_id} = req.params;
+        con.query('UPDATE cocktail SET glassware = ? WHERE cocktail_id = ?',
+            [glassware_id, cocktail_id],
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    }
+);
+
+app.post('/api/cocktail/:cocktail_id/remove-glassware',
+    (req, res) => {
+        const {cocktail_id} = req.params;
+        con.query('UPDATE cocktail SET glassware = NULL WHERE cocktail_id = ?',
+            cocktail_id,
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    }
+);
+
 // DELETE APIs
 app.delete('/api/ingredient/:ingredient_id',
     (req, res) => {
@@ -528,6 +655,39 @@ app.delete('/api/bartender/:bartender_id',
         const id = req.params.bartender_id;
         con.query('DELETE FROM bartender WHERE bartender_id = ?',
             id,
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+app.delete('/api/cocktail/:cocktail_id/remove-ingredient/:ingredient_id',
+    (req, res) => {
+        const {cocktail_id, ingredient_id} = req.params;
+        con.query('DELETE FROM cocktail_ingredients WHERE cocktail = ? AND ingredient = ?',
+            [cocktail_id, ingredient_id],
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+app.delete('/api/cocktail/:cocktail_id/remove-garnish/:garnish_id',
+    (req, res) => {
+        const {cocktail_id, garnish_id} = req.params;
+        con.query('DELETE FROM cocktail_garnishes WHERE cocktail = ? AND garnish = ?',
+            [cocktail_id, garnish_id],
+            function (error, results) {
+                if (error) throw error;
+                res.send(results);
+            });
+    });
+
+app.delete('/api/cocktail/:cocktail_id/remove-step/:step_id',
+    (req, res) => {
+        const {cocktail_id, step_id} = req.params;
+        con.query('DELETE FROM cocktail_steps WHERE cocktail = ? AND step = ?',
+            [cocktail_id, step_id],
             function (error, results) {
                 if (error) throw error;
                 res.send(results);
